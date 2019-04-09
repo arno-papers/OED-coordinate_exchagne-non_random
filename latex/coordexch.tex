@@ -1,0 +1,185 @@
+\newcommand{\printTitle}{A Note on the Output of a Coordinate-Exchange Algorithm for Optimal Experimental Design}
+\newcommand{\printWho}{\title{\bf \printTitle}
+\date{}
+\author{Arno Strouwen*\\
+	{\small arno.strouwen@kuleuven.be}\\
+	{\small ORCID: 0000-0001-8607-4091}\\
+	{\small Faculty of Bioscience Engineering}\\{\small Department of Biosystems}\\{\small KU Leuven}\vspace{-0.3cm}\\
+	$\mbox{ }$\\
+	Peter Goos\\
+	{\small peter.goos@kuleuven.be}\\
+	{\small ORCID: 0000-0002-3854-6506}\\
+	{\small Faculty of Bioscience Engineering}\\{\small Department of Biosystems}\\{\small KU Leuven}\vspace{-0.3cm}\\
+	\\
+	{\small Faculty of Business and Economics }\\{\small Department of Engineering Management}\\{\small University of Antwerp}}
+\maketitle
+\maketitle
+\maketitle
+}
+
+\newcommand{\printAbstract}{The coordinate-exchange algorithm is commonly used to construct optimal experimental designs. Every execution of the coordinate-exchange algorithm produces a new, seemingly random, order of the selected design points. In this short communication, we study the order of the design points produced by the algorithm and conclude that certain orders appear much more often than others. As a result, an explicit randomization step of the design points is required before conducting an experiment using a design produced by a coordinate-exchange algorithm.}
+\newcommand{\printKeywords}{coordinate-exchange algorithm, D-optimality, optimal experimental design, randomization, run order.}
+
+
+\input{layoutPeter}
+\input{layoutCommon}
+\begin{document}
+\input{titlePeter}
+
+In recent years, optimal experimental design has gained popularity due to its flexibility in terms of the number of observations, experimental region and blocking \citep{goos}. For instance, \cite{akkermans} use optimal experimental design to plan excipient compatibility studies in the pharmaceutical industry, \cite{jeirani} apply optimal experimental design to determine the optimum aqueous phase formulation of a microemulsion, and \cite{mancenido} study optimal design of mixture experiments for logistic regression models.\\
+
+One of the most commonly used algorithms to generate optimal experimental designs is the coordinate-exchange algorithm of \cite{meyer}, which has been implemented in statistical software packages such as JMP and Design Expert. The original algorithm was intended for constructing optimal designs for completely randomized experiment, in which the experimental observations are independent. In recent years, the algorithm has been adapted to cope with split-plot, split-split-plot and strip-plot design \citep{jones2,jones,arnouts,arnouts2,trinca}, deal with Bayesian optimality criteria for experimental design \citep{kessels,mylona}, and produce foldover designs \citep{errore}. The algorithm has also been studied in detail by \citet{cuervo}.\\
+
+In this short communication, we study the order of the design points produced by the coor\-di\-nate-exchange algorithm for completely randomized experiments. Our study is inspired by the fact that the order seems random, as a result of which experimenters may not randomize the order of the test combinations suggested by the coordinate-exchange algorithm. The pseudo-code of the coordinate-exchange algorithm for completely randomized experiments is given in Figure \ref{pseudo1}. In the pseudo-code, the symbols $n$ and $m$ represent the number of observations and the number of factors, respectively. The value $s$ indicates the number of executions of the coordinate-exchange algorithm.\\
+
+\begin{figure}[H]
+\begin{algorithm}[H]
+\label{pseudo1}
+optimal design = random feasible design\;
+%initialize how often every permutation is found to zero vector of length $6!$\;
+	\For{r = $1$ to $s$}{
+		Generate random feasible design\;
+		improvement = yes\;
+		\While{improvement == yes}{
+			improvement = no\;
+			\For{$i = 1$ to $n$ and $j = 1$ to $m$}{
+				information = information of current design\;
+				optimize $(i,j)$th coordinate using fmincon\;
+				new information = information of the new design\;
+				\If{new information > information}{
+					information = new information\;
+					improvement = yes\;
+				}
+			}
+		}
+		%\For{t = $1$ to $6!$}{
+			%\If{$r$th input profile == $t$th permutation of the optimal design}{
+				%add 1 to counter of $t$'th design
+			%}
+		%}
+		}
+	\end{algorithm}
+	\caption{Coordinate-exchange algorithm}
+\end{figure}
+
+The coordinate-exchange algorithm starts by randomly selecting a level for each factor from the continuous uniform distribution on the $[-1,1]$ interval, for each observation of the experiment to be conducted. The resulting experimental design is then improved factor level by factor level, starting with the level of the first factor at the first observation and ending with the level of the last factor at the last observation. Each factor level is optimized using a one-dimensional continuous optimizer, keeping all other factor levels constant. For the results we report in this short communication, we utilized an interior point algorithm as implemented in the Matlab function fmincon, and described in \citet{byrd,byrd2} and \citet{waltz}. The coordinate-exchange algorithm continues until a whole pass through the entire design does not yield a single improvement any more.\\
+
+To make our points, we focus on a relatively simple example. More specifically, we study the generation of a D-optimal design for a specific linear regression model involving two quantitative factors, $x_1$ and $x_2$. The model involves the main effects of both factors, their interaction effect and the quadratic effect of $x_1$. Hence, the model is given by
+\begin{equation}\label{modelleke}
+Y_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \beta_{11}x_{i1}^2 + \beta_{12}x_{i1}x_{i2} + \varepsilon_i,
+\end{equation}
+where $Y_i$ represents the response at the $i$th observation, $x_{i1}$ and $x_{i2}$ represents the levels of the factors $x_1$ and $x_2$ at that observation, and $\varepsilon_i$ is the random error term. The model involves five unknown parameters, $\beta_0$, $\beta_1$, $\beta_2$, $\beta_{11}$ and $\beta_{12}$. D-optimal designs maximize the determinant of the information matrix about these five parameters. The only D-optimal design for model \eqref{modelleke} involves the four factor level combinations of the $2^2$ factorial design as well as the combinations $(0,-1)$ and $(0,1)$. The order in which the factor level combinations are tested does not impact the optimality of the experimental design, but it is recommended in design of experiments textbooks to carry out all tests in a random order. This is because randomization is one of the main experimental design principles \citep{mont}.\\
+
+When looking at the output of a coordinate-exchange algorithm, it is tempting to believe that the algorithm outputs the optimal design points in a random order. Table \ref{ordersof3starts} shows the order of the six optimal design points produced by three runs of the coordinate-exchange algorithm. In each case, the order of the six D-optimal factor level combinations is different. This suggests that the ordering of the factor level combinations could be considered random.\\
+
+\begin{table}
+\caption{Run orders produced by three executions of the coordinate-exchange algorithm for model~\eqref{modelleke}.}
+\begin{center}
+\label{ordersof3starts}
+\begin{tabular}{|c|cc|cc|cc|}
+\hline 
+Obs. & \multicolumn{2}{|c|}{Run 1} & \multicolumn{2}{|c|}{Run 2} & \multicolumn{2}{|c|}{Run 3}\\
+& $x_1$ & $x_2$ & $x_1$ & $x_2$& $x_1$ & $x_2$\\
+\hline
+$1	$&$	0	$&$	1	$&$	1	$&$	1	$&$	0	$&$	-1	 $\\
+$2	$&$	-1	$&$	1	$&$	-1	$&$	-1	$&$	1	$&$	1	 $\\
+$3	$&$	1	$&$	-1	$&$	-1	$&$	1	$&$	1	$&$	-1	 $\\
+$4	$&$	0	$&$	-1	$&$	1	$&$	-1	$&$	-1	$&$	-1	 $\\
+$5	$&$	1	$&$	1	$&$	0	$&$	1	$&$	-1	$&$	1	 $\\
+$6	$&$	-1	$&$	-1	$&$	0	$&$	-1	$&$	0	$&$	1	 $\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+To test whether the design points' ordering is indeed random, we conducted a computational experiment involving a large number of executions of the coordinate-exchange algorithm, and we recorded the order in which the six optimal design points occur in the outputs of these executions. As there are six distinct factor level combinations in the D-optimal design, there are $6!=720$ possible orders. In the event the coordinate-exchange algorithm's output would be random, these 720 orders should appear roughly equally often. After executing the coordinate-exchange algorithm $56,000$ times, we observed that each of the 720 orders had been produced at least once and we stopped our computational experiment.\\
+
+%For our model we can verify that the D-optimal design is equal to: 
+%\begin{equation}
+%D_{opt} = \begin{bmatrix}
+%\phantom{-}1       &\phantom{-}1\\
+%\phantom{-}1       &-1\\
+%-1      		 	&\phantom{-}1\\
+%-1       			&-1\\
+%\phantom{-}0       &\phantom{-}1\\
+%\phantom{-}0       &-1\\
+%\end{bmatrix},
+%\end{equation}
+%or one of the $6!=720$ different row permutations of this matrix. 
+
+When studying the results, it turned out that the 720 orders did not at all appear equally often in the outputs of the $56,000$ executions of the algorithm. Figure \ref{figPermutations} shows the frequencies with which each of the 720 orders of the six D-optimal factor level combinations were found. The figure shows that certain orders were found more than 250 times, while others were encountered extremely rarely. The figure therefore suggests that the orders produced by the coordinate-exchange algorithm are not at all random. This is confirmed by Pearson's chi-squared test, which produces a $p$ value much smaller than $0.001$. We can therefore safely reject the hypothesis that the orders are random.\\
+
+\begin{figure}%[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{permutations.png}
+	\caption{Frequency distribution of the 720 different orders of the six D-optimal factor level combinations.}
+	\label{figPermutations}
+\end{figure}
+
+%(PNG figures are not intended for printed documents. EPS is generally the preferred format)
+
+We also studied the orders that occurred most frequently. Generally, the test combinations of the $2^2$ factorial design appear first, while the two factor level combinations involving the middle level of the first factor appear in the second half of the design. Table \ref{bestworst} shows the six orders that occurred most frequently in the 56,000 executions of the coordinate-exchange algorithm. All six orders start with three of the four factorial points. For two of these orders, the fourth design point is the fourth factorial point. For the four other orders, the fourth design point involves the middle level of factor $x_1$. Overall, 12,779 of the 56,000 executions of the algorithm produced a run order starting with the four factorial points, while 7608 of the 56,000 executions produced a run order in which the four factorial points appear in positions 1, 2, 3 and 5. As there are $48$ run orders starting with the four factorial points as well as $48$ run orders starting with three of the factorial points, there is a minority of $96$ run orders that is produced much more frequently than the $624$ other run orders.
+The exact frequencies are $36\%$ for the 96 run orders similar to those in Table \ref{bestworst} and $64\%$ for the remaining $624$ others.\\
+
+\begin{table}
+	\caption{Most common run orders produced by the coordinate-exchange algorithm for model~\eqref{modelleke}.}
+	\begin{center}
+		\label{bestworst}
+		\begin{tabular}{|c|cc|cc|cc|cc|cc|cc|}
+			\hline 
+			Obs. & \multicolumn{2}{|c|}{1} & \multicolumn{2}{|c|}{2} & \multicolumn{2}{|c|}{3}&
+			\multicolumn{2}{|c|}{4} & \multicolumn{2}{|c|}{5}&
+			\multicolumn{2}{|c|}{6}
+			\\
+			& $x_1$ & $x_2$ & $x_1$ & $x_2$& $x_1$ & $x_2$ & $x_1$ & $x_2$ & $x_1$ & $x_2$& $x_1$ & $x_2$\\
+			\hline
+			$1	$&$	-1	$&$	1	$&$	1	$&$	1	$&$	1	$&$	1
+			    $&$	-1	$&$	1	$&$	-1	$&$	-1	$&$	1	$&$	1 $\\
+			$2	$&$	1	$&$	1	$&$	-1	$&$	1	$&$	-1	$&$	1	 	
+			    $&$	1	$&$	1	$&$	1	$&$	-1	$&$	1	$&$	-1 $\\
+			$3	$&$	1	$&$	-1	$&$	-1	$&$	-1	$&$	1	$&$	-1
+			    $&$	-1	$&$	-1	$&$	1	$&$	1	$&$	1	$&$	-1 $\\	 
+			$4	$&$	-1	$&$	-1	$&$	0	$&$	1	$&$	-1	$&$	-1	 
+			    $&$	0	$&$	1	$&$	0	$&$	-1	$&$	0	$&$	1 $\\
+			$5	$&$	0	$&$	-1	$&$	1	$&$	-1	$&$	0	$&$	1
+			    $&$	1	$&$	-1	$&$	-1	$&$	1	$&$	-1	$&$	-1 $\\
+			$6	$&$	0	$&$	1	$&$	0	$&$	-1	$&$	0	$&$	1
+			    $&$	0	$&$	-1	$&$	0	$&$	1	$&$	0	$&$	-1 $\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+%We found that the most often found designs had their two zero's in the latter half of the runs. While the first coordinate of the first two runs had one's with alternate sign:
+%\begin{equation}
+%D_{opt} = \begin{bmatrix}
+%\pm1       &*\\
+%\mp1     &*\\
+%\phantom{-}*	 	&*\\
+%\phantom{-}0		&*\\
+%\phantom{-}*       &*\\
+%\phantom{-}0       &*\\
+%\end{bmatrix}
+%\text{ or } 
+%D_{opt} = \begin{bmatrix}
+%\pm1       &*\\
+%\mp1       &*\\
+%\phantom{-}*	 	&*\\
+%\phantom{-}*		&*\\
+%0       &*\\
+%0       &*\\
+%\end{bmatrix}.
+%\end{equation}
+
+We can explain the dominance of the factor level combinations of the $2^2$ factorial design in the first half of the D-optimal design as follows. The D-optimality criterion favors extreme points of the experimental region because they have a large positive impact on the D-optimality criterion. Therefore, when optimizing the levels of the factors in the first couple of observations of an experiment, the coordinate-exchange algorithm will tend to select the extreme levels for the various experimental factors. This guarantees a precise estimation of the linear main effects $\beta_1$ and $\beta_2$ in model~\eqref{modelleke}, and of the interaction effect $\beta_{12}$. Selecting the factorial points therefore lead to the largest leap in D-optimality. The middle level of the first factor is only useful for estimating the quadratic effect $\beta_{11}$. That factor level is important for fewer model parameters than the extreme levels $-1$ and $1$. It is also known that D-optimal designs use the middle level less frequently than the extreme factor levels for models involving quadratic effects \citep{atdoto}.\\
+
+The practical implication of our conclusion that the order of the factor level combinations produced by a coordinate-exchange are not random, is that a proper randomization of the full set of combinations is required before carrying out the experiment. In the event a coordinate-exchange algorithm is used for designing blocked or split-plot experiments, it will be required to randomize the blocks/whole plots as well as the observations within blocks/whole plots. For other multi-stratum designs, a similar randomization will be necessary.
+ 
+\section*{Acknowledgements}
+Author Arno Strouwen is a PhD fellow Strategic Basic Research (SB) of the Fund for
+Scientific Research, Flanders (FWO), project 1S58717N.
+\small
+\bibliographystyle{dcu}
+\bibliography{refs}
+
+\end{document}

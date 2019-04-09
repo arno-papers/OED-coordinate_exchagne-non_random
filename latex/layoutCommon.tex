@@ -1,0 +1,34 @@
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+
+% fonts
+\usepackage{fbb}
+\usepackage{montserrat}
+\usepackage[adobe-utopia]{mathdesign}
+
+% spacing
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+	{#1}\small\normalsize} \spacingset{1}
+\setlength\parindent{0pt}
+% bibs
+\usepackage{natbib}
+\bibliographystyle{dcu}
+
+% colors
+\usepackage{color}
+% math
+\usepackage{amsmath}
+
+% differentiation 
+\usepackage{esdiff}
+\newcommand*\dd{\mathop{}\!\mathrm{d}}
+% scientific notation power
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+% pseudo code
+\usepackage[ruled,lined]{algorithm2e}
+\usepackage{hyperref}
+% figures
+\usepackage{graphicx,psfrag,epsf}
+\usepackage{float}
+\usepackage{subcaption}
