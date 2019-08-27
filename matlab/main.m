@@ -78,4 +78,63 @@ number_vert
 % corner points are first 3 runs and 5th run
 % 7608 van de 56046
 
+k = 0;
+iterations = 100;
+distributionA = check_equalA(1);
+save('distA.mat')
+while k < 100
+    k
+    k = k+1;  
+    load('distA.mat')
+    distributionA_new = check_equalA(iterations);
+    distributionA = distributionA + distributionA_new;
+    save('distA.mat','distributionA')
+end
+
+k = 0;
+myStream=RandStream('mcg16807');
+distributionD_RNG = check_equalD_RNG(1,myStream);
+save('distD_RNG.mat')
+while k < 100
+    k
+    k = k+1;  
+    load('distD_RNG.mat')
+    distributionD_RNG_new = check_equalD_RNG(iterations,myStream);
+    distributionD_RNG = distributionD_RNG + distributionD_RNG_new;
+    save('distD_RNG.mat','distributionD_RNG')
+end
+
+k = 0;
+distributionD_grid = check_equalD_grid(1);
+save('distD_grid.mat')
+while k < 100
+    k
+    k = k+1;  
+    load('distD_grid.mat')
+    distributionD_grid_new = check_equalD_grid(iterations);
+    distributionD_grid = distributionD_grid + distributionD_grid_new;
+    save('distD_grid.mat','distributionD_grid')
+end
+
+figure,
+hold on
+[sortedA,~] = sort(distributionA,'descend');
+plot(sortedA,'LineWidth',2)
+
+[sortedD_RNG,~] = sort(distributionD_RNG,'descend');
+plot(sortedD_RNG,'LineWidth',2)
+
+[sortedD_grid,~] = sort(distributionD_grid,'descend');
+plot(sortedD_grid,'LineWidth',2)
+
+xlabel('Permutations')
+ylabel('Number of times found')
+set(gca,'fontsize',16)
+box off
+xlim([0 720])
+xticks(0:120:720)
+legend("Other optimality: A optimal", "Other RNG", "Other optimizer")
+print -dpng -r300 alt.png
+
+
 
